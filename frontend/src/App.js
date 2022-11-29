@@ -1,22 +1,38 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/ProductScreen";
-import NavBar from "react-bootstrap/Navbar";
+import Navbar from "react-bootstrap/Navbar";
+import Badge from "react-bootstrap/Badge";
+import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
 import { LinkContainer } from "react-router-bootstrap";
+import { useContext } from "react";
+import { Store } from "./Store";
 
 function App() {
+  const { state } = useContext(Store);
+  const { cart } = state;
   return (
     <BrowserRouter>
       <div className="d-flex flex-column site-container">
         <header>
-          <NavBar bg="dark" variant="dark">
+          <Navbar bg="dark" variant="dark">
             <Container>
               <LinkContainer to="/">
-                <NavBar.Brand>Mateando el Tiempo</NavBar.Brand>
+                <Navbar.Brand>amazona</Navbar.Brand>
               </LinkContainer>
+              <Nav className="me-auto">
+                <Link to="/cart" className="nav-link">
+                  Cart
+                  {cart.cartItems.length > 0 && (
+                    <Badge pill bg="danger">
+                      {cart.cartItems.length}
+                    </Badge>
+                  )}
+                </Link>
+              </Nav>
             </Container>
-          </NavBar>
+          </Navbar>
         </header>
         <main>
           <Container className="mt-3">
