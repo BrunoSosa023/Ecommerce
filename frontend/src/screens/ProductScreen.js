@@ -1,13 +1,13 @@
 import axios from "axios";
-import React, { useContext, useEffect, useReducer } from "react";
-import Col from "react-bootstrap/esm/Col";
-import ListGroup from "react-bootstrap/esm/ListGroup";
-import Badge from "react-bootstrap/esm/Badge";
-import Card from "react-bootstrap/esm/Card";
-import Row from "react-bootstrap/esm/Row";
+import { useContext, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
 import Rating from "../components/Rating";
-import Button from "react-bootstrap/esm/Button";
 import { Helmet } from "react-helmet-async";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -30,12 +30,12 @@ const reducer = (state, action) => {
 function ProductScreen() {
   const params = useParams();
   const { slug } = params;
+
   const [{ loading, error, product }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
     error: "",
   });
-
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
@@ -50,13 +50,20 @@ function ProductScreen() {
   }, [slug]);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const addToCartHandler = () => {
+  const { cart } = state;
+  const addToCartHandler = async () => {
+    const existItem = cart.cartItems.find((x) => x._id === product._id);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    if (data.countInStock < quantity) {
+      window.alert("Sorry. Product is out of stock");
+      return;
+    }
     ctxDispatch({
       type: "CART_ADD_ITEM",
-      payload: { ...product, quantity: 1 },
+      payload: { ...product, quantity },
     });
   };
-
   return loading ? (
     <LoadingBox />
   ) : error ? (
@@ -85,9 +92,10 @@ function ProductScreen() {
                 numReviews={product.numReviews}
               ></Rating>
             </ListGroup.Item>
-            <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
+            <ListGroup.Item>Pirce : ${product.price}</ListGroup.Item>
             <ListGroup.Item>
-              Description : <p>{product.description}</p>
+              Description:
+              <p>{product.description}</p>
             </ListGroup.Item>
           </ListGroup>
         </Col>
@@ -108,11 +116,12 @@ function ProductScreen() {
                       {product.countInStock > 0 ? (
                         <Badge bg="success">In Stock</Badge>
                       ) : (
-                        <Badge bg="danger">Unvailable</Badge>
+                        <Badge bg="danger">Unavailable</Badge>
                       )}
                     </Col>
                   </Row>
                 </ListGroup.Item>
+
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
                     <div className="d-grid">
@@ -130,5 +139,4 @@ function ProductScreen() {
     </div>
   );
 }
-
 export default ProductScreen;
