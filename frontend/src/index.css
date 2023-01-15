@@ -6,20 +6,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 .site-container {
   min-height: 100vh;
 }
-
 main {
   flex: 1;
 }
-
 .btn-primary {
   background-color: #f0c040;
   color: #000000;
 }
-
 .products {
   display: flex;
   flex-wrap: wrap;
@@ -34,15 +30,16 @@ main {
   border: 1px #404040 solid;
   margin: 1rem;
 }
-
-.product-info {
-  padding: 1rem;
-}
-
 .product img {
   width: 100%;
   max-width: 400px;
 }
-.image-large {
-  width: 100%;
+.product-info {
+  padding: 1rem;
+}
+.img-large {
+  max-width: 100%;
+}
+.img-thumbnail {
+  height: 80px;
 }
